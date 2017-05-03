@@ -28,11 +28,42 @@ public class UserExecController implements ExecutionListener {
 		
 		LOGGER.info("****** Testing program variables ******");
 		
-		// Test
-		if (ACTIVITY.equals("createUser")) {
-			LOGGER.info("Current Activity Detected: " + ACTIVITY);
-		} else if (ACTIVITY.equals("assignEngineer")) {
-			LOGGER.info("Current Activity Detected: " + ACTIVITY);
+		switch (ACTIVITY) {
+		case "createUser":
+			// Write some code here
+			break;
+		case "assignEngineer":
+			// Write some code here
+			break;
+		case "identifyMaterials":
+			// Write some code here
+			break;
+		case "productCuantity":
+			// Write some code here
+			break;
+		case "estimatedTime":
+			// Write some code here
+			break;
+		case "calculateCost":
+			// Write some code here
+			break;
+		case "searchTemplate":
+			// Write some code here
+			break;
+		case "generalData":
+			// Write some code here
+			break;
+		case "validateService":
+			// Write some code here
+			break;
+		case "saveQuote":
+			// Write some code here
+			break;
+		case "saveRequest":
+			// Write some code here
+			break;
+		default:
+			break;
 		}
 	}
 }

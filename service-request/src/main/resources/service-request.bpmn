@@ -15,8 +15,11 @@
       <bpmn:outgoing>SequenceFlow_15k3deo</bpmn:outgoing>
     </bpmn:userTask>
     <bpmn:sequenceFlow id="SequenceFlow_1exf7so" sourceRef="Task_12y5i6z" targetRef="Task_0z246k6" />
-    <bpmn:sequenceFlow id="SequenceFlow_090dk7z" sourceRef="Task_0z246k6" targetRef="Task_0h37t0y" />
-    <bpmn:userTask id="Task_0h37t0y" name="Identificar Materiales Requeridos" camunda:formKey="embedded:app:forms/identify-materials.html" camunda:assignee="Josue">
+    <bpmn:sequenceFlow id="SequenceFlow_090dk7z" sourceRef="Task_0z246k6" targetRef="identifyMaterials" />
+    <bpmn:userTask id="identifyMaterials" name="Identificar Materiales Requeridos" camunda:formKey="embedded:app:forms/identify-materials.html" camunda:assignee="Josue">
+      <bpmn:extensionElements>
+        <camunda:executionListener class="org.camunda.bpm.dissiservice.servicerequest.UserExecController" event="end" />
+      </bpmn:extensionElements>
       <bpmn:incoming>SequenceFlow_090dk7z</bpmn:incoming>
       <bpmn:outgoing>SequenceFlow_0saolil</bpmn:outgoing>
     </bpmn:userTask>
@@ -28,35 +31,41 @@
       <bpmn:incoming>SequenceFlow_1yhwfwh</bpmn:incoming>
       <bpmn:outgoing>SequenceFlow_1x40j1r</bpmn:outgoing>
     </bpmn:task>
-    <bpmn:sequenceFlow id="SequenceFlow_0saolil" sourceRef="Task_0h37t0y" targetRef="Task_1kfbebi" />
-    <bpmn:sequenceFlow id="SequenceFlow_11kp76c" sourceRef="Task_1kfbebi" targetRef="Task_194v5is" />
-    <bpmn:sequenceFlow id="SequenceFlow_1uy0v85" sourceRef="Task_194v5is" targetRef="Task_14c3f0z" />
-    <bpmn:sequenceFlow id="SequenceFlow_06ichot" sourceRef="Task_14c3f0z" targetRef="Task_0snb1ry" />
-    <bpmn:sequenceFlow id="SequenceFlow_0snxys1" sourceRef="Task_0snb1ry" targetRef="Task_1ctl23b" />
-    <bpmn:sequenceFlow id="SequenceFlow_19wrvnw" sourceRef="Task_1ctl23b" targetRef="Task_0lswhig" />
-    <bpmn:sequenceFlow id="SequenceFlow_1yhwfwh" sourceRef="Task_0lswhig" targetRef="Task_1umfjat" />
+    <bpmn:sequenceFlow id="SequenceFlow_0saolil" sourceRef="identifyMaterials" targetRef="productCuantity" />
+    <bpmn:sequenceFlow id="SequenceFlow_11kp76c" sourceRef="productCuantity" targetRef="estimatedTime" />
+    <bpmn:sequenceFlow id="SequenceFlow_1uy0v85" sourceRef="estimatedTime" targetRef="calculateCost" />
+    <bpmn:sequenceFlow id="SequenceFlow_06ichot" sourceRef="calculateCost" targetRef="searchTemplate" />
+    <bpmn:sequenceFlow id="SequenceFlow_0snxys1" sourceRef="searchTemplate" targetRef="Task_1ctl23b" />
+    <bpmn:sequenceFlow id="SequenceFlow_19wrvnw" sourceRef="Task_1ctl23b" targetRef="generalData" />
+    <bpmn:sequenceFlow id="SequenceFlow_1yhwfwh" sourceRef="generalData" targetRef="Task_1umfjat" />
     <bpmn:task id="Task_0yz42jw" name="Guarda Orden de Compra como &#34;No Aprobada&#34;">
       <bpmn:incoming>SequenceFlow_1x40j1r</bpmn:incoming>
       <bpmn:outgoing>SequenceFlow_1j7yszw</bpmn:outgoing>
     </bpmn:task>
     <bpmn:sequenceFlow id="SequenceFlow_1x40j1r" sourceRef="Task_1umfjat" targetRef="Task_0yz42jw" />
-    <bpmn:sequenceFlow id="SequenceFlow_1j7yszw" sourceRef="Task_0yz42jw" targetRef="Task_1ygwvuw" />
-    <bpmn:sequenceFlow id="SequenceFlow_11jagzd" sourceRef="Task_1ygwvuw" targetRef="Task_0cnx2w6" />
+    <bpmn:sequenceFlow id="SequenceFlow_1j7yszw" sourceRef="Task_0yz42jw" targetRef="validateService" />
+    <bpmn:sequenceFlow id="SequenceFlow_11jagzd" sourceRef="validateService" targetRef="saveQuote" />
     <bpmn:task id="Task_0780qwu" name="Cliente Paga">
       <bpmn:incoming>SequenceFlow_0ui7nsu</bpmn:incoming>
       <bpmn:outgoing>SequenceFlow_0zwo8en</bpmn:outgoing>
     </bpmn:task>
-    <bpmn:sequenceFlow id="SequenceFlow_0ui7nsu" sourceRef="Task_0cnx2w6" targetRef="Task_0780qwu" />
-    <bpmn:sequenceFlow id="SequenceFlow_0zwo8en" sourceRef="Task_0780qwu" targetRef="Task_1jt0aek" />
+    <bpmn:sequenceFlow id="SequenceFlow_0ui7nsu" sourceRef="saveQuote" targetRef="Task_0780qwu" />
+    <bpmn:sequenceFlow id="SequenceFlow_0zwo8en" sourceRef="Task_0780qwu" targetRef="saveRequest" />
     <bpmn:endEvent id="EndEvent_1wjifhb" name="Servicio Realizado">
       <bpmn:incoming>SequenceFlow_1npoz21</bpmn:incoming>
     </bpmn:endEvent>
-    <bpmn:sequenceFlow id="SequenceFlow_1npoz21" sourceRef="Task_1jt0aek" targetRef="EndEvent_1wjifhb" />
-    <bpmn:userTask id="Task_1kfbebi" name="Estimar Cantidad de Producto" camunda:formKey="embedded:app:forms/product-cuantity.html" camunda:assignee="Josue">
+    <bpmn:sequenceFlow id="SequenceFlow_1npoz21" sourceRef="saveRequest" targetRef="EndEvent_1wjifhb" />
+    <bpmn:userTask id="productCuantity" name="Estimar Cantidad de Producto" camunda:formKey="embedded:app:forms/product-cuantity.html" camunda:assignee="Josue">
+      <bpmn:extensionElements>
+        <camunda:executionListener class="org.camunda.bpm.dissiservice.servicerequest.UserExecController" event="end" />
+      </bpmn:extensionElements>
       <bpmn:incoming>SequenceFlow_0saolil</bpmn:incoming>
       <bpmn:outgoing>SequenceFlow_11kp76c</bpmn:outgoing>
     </bpmn:userTask>
-    <bpmn:userTask id="Task_194v5is" name="Calcular Tiempo Estimado del Proyecto" camunda:formKey="embedded:app:forms/estimated-time.html" camunda:assignee="Josue">
+    <bpmn:userTask id="estimatedTime" name="Calcular Tiempo Estimado del Proyecto" camunda:formKey="embedded:app:forms/estimated-time.html" camunda:assignee="Josue">
+      <bpmn:extensionElements>
+        <camunda:executionListener class="org.camunda.bpm.dissiservice.servicerequest.UserExecController" event="end" />
+      </bpmn:extensionElements>
       <bpmn:incoming>SequenceFlow_11kp76c</bpmn:incoming>
       <bpmn:outgoing>SequenceFlow_1uy0v85</bpmn:outgoing>
     </bpmn:userTask>
@@ -68,27 +77,45 @@
       <bpmn:incoming>SequenceFlow_1exf7so</bpmn:incoming>
       <bpmn:outgoing>SequenceFlow_090dk7z</bpmn:outgoing>
     </bpmn:task>
-    <bpmn:userTask id="Task_14c3f0z" name="Calcular Costos" camunda:formKey="embedded:app:forms/calculate-cost.html" camunda:assignee="Josue">
+    <bpmn:userTask id="calculateCost" name="Calcular Costos" camunda:formKey="embedded:app:forms/calculate-cost.html" camunda:assignee="Josue">
+      <bpmn:extensionElements>
+        <camunda:executionListener class="org.camunda.bpm.dissiservice.servicerequest.UserExecController" event="end" />
+      </bpmn:extensionElements>
       <bpmn:incoming>SequenceFlow_1uy0v85</bpmn:incoming>
       <bpmn:outgoing>SequenceFlow_06ichot</bpmn:outgoing>
     </bpmn:userTask>
-    <bpmn:userTask id="Task_0snb1ry" name="Buscar Plantilla Correspondiente" camunda:formKey="embedded:app:forms/search-template.html" camunda:assignee="Vanesa">
+    <bpmn:userTask id="searchTemplate" name="Buscar Plantilla Correspondiente" camunda:formKey="embedded:app:forms/search-template.html" camunda:assignee="Vanesa">
+      <bpmn:extensionElements>
+        <camunda:executionListener class="org.camunda.bpm.dissiservice.servicerequest.UserExecController" event="end" />
+      </bpmn:extensionElements>
       <bpmn:incoming>SequenceFlow_06ichot</bpmn:incoming>
       <bpmn:outgoing>SequenceFlow_0snxys1</bpmn:outgoing>
     </bpmn:userTask>
-    <bpmn:userTask id="Task_0lswhig" name="Enviar Correo con Datos Generales del Servicio" camunda:formKey="embedded:app:forms/general-data.html" camunda:assignee="Vanesa">
+    <bpmn:userTask id="generalData" name="Enviar Correo con Datos Generales del Servicio" camunda:formKey="embedded:app:forms/general-data.html" camunda:assignee="Vanesa">
+      <bpmn:extensionElements>
+        <camunda:executionListener class="org.camunda.bpm.dissiservice.servicerequest.UserExecController" event="end" />
+      </bpmn:extensionElements>
       <bpmn:incoming>SequenceFlow_19wrvnw</bpmn:incoming>
       <bpmn:outgoing>SequenceFlow_1yhwfwh</bpmn:outgoing>
     </bpmn:userTask>
-    <bpmn:userTask id="Task_1ygwvuw" name="Validar Orden de Ventas" camunda:formKey="embedded:app:forms/validate-service.html" camunda:assignee="demo">
+    <bpmn:userTask id="validateService" name="Validar Orden de Ventas" camunda:formKey="embedded:app:forms/validate-service.html" camunda:assignee="demo">
+      <bpmn:extensionElements>
+        <camunda:executionListener class="org.camunda.bpm.dissiservice.servicerequest.UserExecController" event="end" />
+      </bpmn:extensionElements>
       <bpmn:incoming>SequenceFlow_1j7yszw</bpmn:incoming>
       <bpmn:outgoing>SequenceFlow_11jagzd</bpmn:outgoing>
     </bpmn:userTask>
-    <bpmn:userTask id="Task_0cnx2w6" name="Guarda Cotizacion en &#34;Estado Aprobada&#34;" camunda:formKey="embedded:app:forms/save-quote.html" camunda:assignee="Vanesa">
+    <bpmn:userTask id="saveQuote" name="Guarda Cotizacion en &#34;Estado Aprobada&#34;" camunda:formKey="embedded:app:forms/save-quote.html" camunda:assignee="Vanesa">
+      <bpmn:extensionElements>
+        <camunda:executionListener class="org.camunda.bpm.dissiservice.servicerequest.UserExecController" event="end" />
+      </bpmn:extensionElements>
       <bpmn:incoming>SequenceFlow_11jagzd</bpmn:incoming>
       <bpmn:outgoing>SequenceFlow_0ui7nsu</bpmn:outgoing>
     </bpmn:userTask>
-    <bpmn:userTask id="Task_1jt0aek" name="Guardar Cotizacion en Estado &#34;Pagado&#34;" camunda:formKey="embedded:app:forms/save-request.html" camunda:assignee="Vanesa">
+    <bpmn:userTask id="saveRequest" name="Guardar Cotizacion en Estado &#34;Pagado&#34;" camunda:formKey="embedded:app:forms/save-request.html" camunda:assignee="Vanesa">
+      <bpmn:extensionElements>
+        <camunda:executionListener class="org.camunda.bpm.dissiservice.servicerequest.UserExecController" event="end" />
+      </bpmn:extensionElements>
       <bpmn:incoming>SequenceFlow_0zwo8en</bpmn:incoming>
       <bpmn:outgoing>SequenceFlow_1npoz21</bpmn:outgoing>
     </bpmn:userTask>
@@ -146,7 +173,7 @@
           <dc:Bounds x="1043" y="98.5" width="0" height="13" />
         </bpmndi:BPMNLabel>
       </bpmndi:BPMNEdge>
-      <bpmndi:BPMNShape id="UserTask_0y0do6n_di" bpmnElement="Task_0h37t0y">
+      <bpmndi:BPMNShape id="UserTask_0y0do6n_di" bpmnElement="identifyMaterials">
         <dc:Bounds x="1093" y="80" width="100" height="80" />
       </bpmndi:BPMNShape>
       <bpmndi:BPMNShape id="Task_1ctl23b_di" bpmnElement="Task_1ctl23b">
@@ -262,10 +289,10 @@
           <dc:Bounds x="473.5" y="697.5" width="0" height="13" />
         </bpmndi:BPMNLabel>
       </bpmndi:BPMNEdge>
-      <bpmndi:BPMNShape id="UserTask_08yp79f_di" bpmnElement="Task_1kfbebi">
+      <bpmndi:BPMNShape id="UserTask_08yp79f_di" bpmnElement="productCuantity">
         <dc:Bounds x="1291" y="80" width="100" height="80" />
       </bpmndi:BPMNShape>
-      <bpmndi:BPMNShape id="UserTask_1rgbsh6_di" bpmnElement="Task_194v5is">
+      <bpmndi:BPMNShape id="UserTask_1rgbsh6_di" bpmnElement="estimatedTime">
         <dc:Bounds x="1489" y="80" width="100" height="80" />
       </bpmndi:BPMNShape>
       <bpmndi:BPMNShape id="Task_0017ay2_di" bpmnElement="Task_12y5i6z">
@@ -274,22 +301,22 @@
       <bpmndi:BPMNShape id="Task_11au3bt_di" bpmnElement="Task_0z246k6">
         <dc:Bounds x="893" y="80" width="100" height="80" />
       </bpmndi:BPMNShape>
-      <bpmndi:BPMNShape id="UserTask_1q1rdfy_di" bpmnElement="Task_14c3f0z">
+      <bpmndi:BPMNShape id="UserTask_1q1rdfy_di" bpmnElement="calculateCost">
         <dc:Bounds x="1682" y="80" width="100" height="80" />
       </bpmndi:BPMNShape>
-      <bpmndi:BPMNShape id="UserTask_0ysrtwb_di" bpmnElement="Task_0snb1ry">
+      <bpmndi:BPMNShape id="UserTask_0ysrtwb_di" bpmnElement="searchTemplate">
         <dc:Bounds x="310" y="383" width="100" height="80" />
       </bpmndi:BPMNShape>
-      <bpmndi:BPMNShape id="UserTask_0erdgww_di" bpmnElement="Task_0lswhig">
+      <bpmndi:BPMNShape id="UserTask_0erdgww_di" bpmnElement="generalData">
         <dc:Bounds x="697" y="383" width="100" height="80" />
       </bpmndi:BPMNShape>
-      <bpmndi:BPMNShape id="UserTask_0dt72sf_di" bpmnElement="Task_1ygwvuw">
+      <bpmndi:BPMNShape id="UserTask_0dt72sf_di" bpmnElement="validateService">
         <dc:Bounds x="1291" y="383" width="100" height="80" />
       </bpmndi:BPMNShape>
-      <bpmndi:BPMNShape id="UserTask_0bak3iu_di" bpmnElement="Task_0cnx2w6">
+      <bpmndi:BPMNShape id="UserTask_0bak3iu_di" bpmnElement="saveQuote">
         <dc:Bounds x="1489" y="383" width="100" height="80" />
       </bpmndi:BPMNShape>
-      <bpmndi:BPMNShape id="UserTask_1ut4ot4_di" bpmnElement="Task_1jt0aek">
+      <bpmndi:BPMNShape id="UserTask_1ut4ot4_di" bpmnElement="saveRequest">
         <dc:Bounds x="311" y="679" width="100" height="80" />
       </bpmndi:BPMNShape>
       <bpmndi:BPMNShape id="UserTask_1g1nhpb_di" bpmnElement="createUser">
