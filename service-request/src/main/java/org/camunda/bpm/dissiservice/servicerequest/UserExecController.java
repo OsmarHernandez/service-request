@@ -46,14 +46,12 @@ public class UserExecController implements ExecutionListener {
 		switch (ACTIVITY) {
 		case "startEvent":
 			connectToDB();
-			addDataToDB("Osmar Hernandez", "A01244070", "6561081010");
-			getDataFromDB();
 			break;
 		case "createUser":
-			// Write some code here
+			addDataToDB(2, "Osmar Hernandez", "656 108 1010");
 			break;
 		case "assignEngineer":
-			// Write some code here
+			getDataFromDB();
 			break;
 		case "identifyMaterials":
 			// Write some code here
@@ -93,9 +91,9 @@ public class UserExecController implements ExecutionListener {
 	private static void connectToDB() {
 		try {
 			Class.forName("com.mysql.jdbc.Driver");
-			LOGGER.info("Congrats - Seems your MySQL JDBC Driver Registered!");
+			LOGGER.info("****** MySQL JDBC Driver Registered ******");
 		} catch (ClassNotFoundException e) {
-			LOGGER.info("Sorry, couldn't found JDBC driver. Make sure you have added JDBC Maven Dependency Correctly");
+			LOGGER.info("****** Couldn't found JDBC driver ******");
 			return;
 		}
  
@@ -103,28 +101,28 @@ public class UserExecController implements ExecutionListener {
 			// DriverManager: The basic service for managing a set of JDBC drivers.
 			connection = DriverManager.getConnection("jdbc:mysql://localhost:3306/Dissi", "username", "password");
 			if (connection != null) {
-				LOGGER.info("Connection Successful! Enjoy. Now it's time to push data");
+				LOGGER.info("****** Connection Successful ******");
 			} else {
-				LOGGER.info("Failed to make connection!");
+				LOGGER.info("****** Failed to make connection ******");
 			}
 		} catch (SQLException e) {
-			LOGGER.info("MySQL Connection Failed!");
+			LOGGER.info("****** MySQL Connection Failed ******");
 			return;
 		}
 	}
 	
-	private static void addDataToDB(String name, String id, String phone) { 
+	private static void addDataToDB(int id, String nombre, String telefono) { 
 		try {
-			String insertQueryStatement = "INSERT INTO Engineer VALUES (?,?,?)";
+			String insertQueryStatement = "INSERT INTO Ingenieros VALUES (?,?,?)";
  
 			preparedStatement = connection.prepareStatement(insertQueryStatement);
-			preparedStatement.setString(1, name);
-			preparedStatement.setString(2, id);
-			preparedStatement.setString(3, phone);
+			preparedStatement.setInt(1, id);
+			preparedStatement.setString(2, nombre);
+			preparedStatement.setString(3, telefono);
  
 			// execute insert SQL statement
 			preparedStatement.executeUpdate();
-			LOGGER.info(" added successfully");
+			LOGGER.info("****** Added successfully ******");
 		} catch (
  
 		SQLException e) {
@@ -135,7 +133,7 @@ public class UserExecController implements ExecutionListener {
 	private static void getDataFromDB() {
 		try {
 			// MySQL Select Query Tutorial
-			String getQueryStatement = "SELECT * FROM Engineer";
+			String getQueryStatement = "SELECT * FROM Ingenieros";
  
 			preparedStatement = connection.prepareStatement(getQueryStatement);
  
@@ -144,13 +142,22 @@ public class UserExecController implements ExecutionListener {
  
 			// Let's iterate through the java ResultSet
 			while (resultSet.next()) {
-				LOGGER.info(resultSet.getString("Name"));
+				LOGGER.info("****** " + resultSet.getString("nombre") + " ******");
 			}
  
 		} catch (
  
 		SQLException e) {
 			e.printStackTrace();
+		}
+	}
+	
+	private static void disconnectFromDB() throws SQLException {
+		if (preparedStatement != null) {
+			preparedStatement.close();
+		}
+		if (connection != null) {
+			connection.close();
 		}
 	}
 }
