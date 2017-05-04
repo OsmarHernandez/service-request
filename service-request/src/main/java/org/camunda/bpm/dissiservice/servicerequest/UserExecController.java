@@ -46,12 +46,13 @@ public class UserExecController implements ExecutionListener {
 		switch (ACTIVITY) {
 		case "startEvent":
 			connectToDB();
+			addDataToDB(ACTIVITY, execution);
 			break;
 		case "createUser":
-			addDataToDB(2, "Osmar Hernandez", "656 108 1010");
+			addDataToDB(ACTIVITY, execution);
 			break;
 		case "assignEngineer":
-			getDataFromDB();
+			updateDataFromDB(ACTIVITY, execution);
 			break;
 		case "identifyMaterials":
 			// Write some code here
@@ -111,18 +112,60 @@ public class UserExecController implements ExecutionListener {
 		}
 	}
 	
-	private static void addDataToDB(int id, String nombre, String telefono) { 
+	private static void addDataToDB(String activityId, DelegateExecution exec) { 
+		String insertQueryStatement;
 		try {
-			String insertQueryStatement = "INSERT INTO Ingenieros VALUES (?,?,?)";
- 
-			preparedStatement = connection.prepareStatement(insertQueryStatement);
-			preparedStatement.setInt(1, id);
-			preparedStatement.setString(2, nombre);
-			preparedStatement.setString(3, telefono);
+			switch (activityId) {
+			case "startEvent":
+				insertQueryStatement = "INSERT INTO Cotizaciones VALUES (?,?,?, null, null)";
+				preparedStatement = connection.prepareStatement(insertQueryStatement);
+				preparedStatement.setInt(1, (int) exec.getVariable("cotizacionId"));
+				preparedStatement.setInt(2, (int) exec.getVariableLocal("clienteId"));
+				preparedStatement.setString(3, (String) exec.getVariable("fechaRealizada"));
+				break;
+			case "createUser":
+				insertQueryStatement = "INSERT INTO Clientes VALUES (?,?,?,?,?,?,?,?,?)";
+				preparedStatement = connection.prepareStatement(insertQueryStatement);
+				preparedStatement.setString(1, (String) exec.getVariable("nombre"));
+				preparedStatement.setString(2, (String) exec.getVariable("correo"));
+				preparedStatement.setString(3, (String) exec.getVariable("telefono"));
+				preparedStatement.setString(4, (String) exec.getVariable("domicilio"));
+				preparedStatement.setString(5, (String) exec.getVariable("rfc"));
+				preparedStatement.setString(6, (String) exec.getVariable("contacto"));
+				preparedStatement.setString(7, (String) exec.getVariable("razonSocial"));
+				preparedStatement.setString(8, (String) exec.getVariable("departamento"));
+				preparedStatement.setInt(9, (int) exec.getVariable("id"));
+				break;
+			default:
+				break;
+			}
  
 			// execute insert SQL statement
 			preparedStatement.executeUpdate();
 			LOGGER.info("****** Added successfully ******");
+		} catch (
+ 
+		SQLException e) {
+			e.printStackTrace();
+		}
+	}
+	
+	private static void updateDataFromDB(String activityId, DelegateExecution exec) {
+		String insertQueryStatement;
+		try {
+			switch (activityId) { 
+			case "assignEngineer":
+				insertQueryStatement = "UPDATE Cotizaciones SET ingeniero_asignado_fk = ? WHERE cotizacion_id = ?";
+				preparedStatement = connection.prepareStatement(insertQueryStatement);
+				preparedStatement.setInt(1, (int) exec.getVariable("ingenieroId"));
+				preparedStatement.setInt(2, (int) exec.getVariable("cotizacionId"));
+				break;
+			default:
+				break;
+			}
+			// execute update SQL statement
+			preparedStatement.executeUpdate();
+			LOGGER.info("****** Updated successfully ******");
 		} catch (
  
 		SQLException e) {
