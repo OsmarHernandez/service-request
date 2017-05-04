@@ -61,13 +61,13 @@ public class UserExecController implements ExecutionListener {
 			// Write some code here
 			break;
 		case "estimatedTime":
-			// Write some code here
+			updateDataFromDB(ACTIVITY, execution);
 			break;
 		case "calculateCost":
 			// Write some code here
 			break;
 		case "searchTemplate":
-			// Write some code here
+			getDataFromDB(ACTIVITY, execution);
 			break;
 		case "generalData":
 			// Write some code here
@@ -160,6 +160,12 @@ public class UserExecController implements ExecutionListener {
 				preparedStatement.setInt(1, (int) exec.getVariable("ingenieroId"));
 				preparedStatement.setInt(2, (int) exec.getVariable("cotizacionId"));
 				break;
+			case "estimatedTime":
+				insertQueryStatement = "UPDATE Cotizaciones SET ingeniero_asignado_fk = ? WHERE cotizacion_id = ?";
+				preparedStatement = connection.prepareStatement(insertQueryStatement);
+				preparedStatement.setString(1, (String) exec.getVariable("tiempoEstimado"));
+				preparedStatement.setInt(2, (int) exec.getVariable("cotizacionId"));
+				break;
 			default:
 				break;
 			}
@@ -173,19 +179,23 @@ public class UserExecController implements ExecutionListener {
 		}
 	}
 	
-	private static void getDataFromDB() {
+	private static void getDataFromDB(String activityId, DelegateExecution exec) {
+		String getQueryStatement;
 		try {
-			// MySQL Select Query Tutorial
-			String getQueryStatement = "SELECT * FROM Ingenieros";
- 
-			preparedStatement = connection.prepareStatement(getQueryStatement);
- 
-			// Execute the Query, and get a java ResultSet
-			ResultSet resultSet = preparedStatement.executeQuery();
- 
-			// Let's iterate through the java ResultSet
-			while (resultSet.next()) {
-				LOGGER.info("****** " + resultSet.getString("nombre") + " ******");
+			switch (activityId) {
+			case "searchTemplate":
+				getQueryStatement = "Select nombre From Ingenieros where ingeniero_id=?";
+				preparedStatement = connection.prepareStatement(getQueryStatement);
+				preparedStatement.setInt(1, (int) exec.getVariable("ingenieroId"));
+				ResultSet resultSet = preparedStatement.executeQuery();
+				// Let's iterate through the java ResultSet
+				while (resultSet.next()) {
+					LOGGER.info("****** " + resultSet.getString("nombre") + " ******");
+					exec.setVariable("nombre", "ingenieroNombre");
+				}
+				break;
+			default:
+				break;
 			}
  
 		} catch (
