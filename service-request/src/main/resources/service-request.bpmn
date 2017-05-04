@@ -1,10 +1,13 @@
 <?xml version="1.0" encoding="UTF-8"?>
 <bpmn:definitions xmlns:bpmn="http://www.omg.org/spec/BPMN/20100524/MODEL" xmlns:bpmndi="http://www.omg.org/spec/BPMN/20100524/DI" xmlns:di="http://www.omg.org/spec/DD/20100524/DI" xmlns:dc="http://www.omg.org/spec/DD/20100524/DC" xmlns:camunda="http://camunda.org/schema/1.0/bpmn" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" id="Definitions_1" targetNamespace="http://bpmn.io/schema/bpmn" exporter="Camunda Modeler" exporterVersion="1.7.2">
   <bpmn:process id="request-service" name="Service Request" isExecutable="true">
-    <bpmn:startEvent id="StartEvent_1" name="Cliente Solicita Servicio" camunda:formKey="embedded:app:forms/request-service.html">
+    <bpmn:startEvent id="startEvent" name="Cliente Solicita Servicio" camunda:formKey="embedded:app:forms/request-service.html">
+      <bpmn:extensionElements>
+        <camunda:executionListener class="org.camunda.bpm.dissiservice.servicerequest.UserExecController" event="end" />
+      </bpmn:extensionElements>
       <bpmn:outgoing>SequenceFlow_1xyhuhz</bpmn:outgoing>
     </bpmn:startEvent>
-    <bpmn:sequenceFlow id="SequenceFlow_1xyhuhz" sourceRef="StartEvent_1" targetRef="createUser" />
+    <bpmn:sequenceFlow id="SequenceFlow_1xyhuhz" sourceRef="startEvent" targetRef="createUser" />
     <bpmn:sequenceFlow id="SequenceFlow_0j1db5v" sourceRef="createUser" targetRef="assignEngineer" />
     <bpmn:sequenceFlow id="SequenceFlow_15k3deo" sourceRef="assignEngineer" targetRef="Task_12y5i6z" />
     <bpmn:userTask id="assignEngineer" name="Asignar Proyecto" camunda:formKey="embedded:app:forms/assign-engineer.html" camunda:assignee="Vanesa">
@@ -51,10 +54,13 @@
     </bpmn:task>
     <bpmn:sequenceFlow id="SequenceFlow_0ui7nsu" sourceRef="saveQuote" targetRef="Task_0780qwu" />
     <bpmn:sequenceFlow id="SequenceFlow_0zwo8en" sourceRef="Task_0780qwu" targetRef="saveRequest" />
-    <bpmn:endEvent id="EndEvent_1wjifhb" name="Servicio Realizado">
+    <bpmn:endEvent id="endEvent" name="Servicio Realizado">
+      <bpmn:extensionElements>
+        <camunda:executionListener class="org.camunda.bpm.dissiservice.servicerequest.UserExecController" event="end" />
+      </bpmn:extensionElements>
       <bpmn:incoming>SequenceFlow_1npoz21</bpmn:incoming>
     </bpmn:endEvent>
-    <bpmn:sequenceFlow id="SequenceFlow_1npoz21" sourceRef="saveRequest" targetRef="EndEvent_1wjifhb" />
+    <bpmn:sequenceFlow id="SequenceFlow_1npoz21" sourceRef="saveRequest" targetRef="endEvent" />
     <bpmn:userTask id="productCuantity" name="Estimar Cantidad de Producto" camunda:formKey="embedded:app:forms/product-cuantity.html" camunda:assignee="Josue">
       <bpmn:extensionElements>
         <camunda:executionListener class="org.camunda.bpm.dissiservice.servicerequest.UserExecController" event="end" />
@@ -129,7 +135,7 @@
   </bpmn:process>
   <bpmndi:BPMNDiagram id="BPMNDiagram_1">
     <bpmndi:BPMNPlane id="BPMNPlane_1" bpmnElement="request-service">
-      <bpmndi:BPMNShape id="_BPMNShape_StartEvent_2" bpmnElement="StartEvent_1">
+      <bpmndi:BPMNShape id="_BPMNShape_StartEvent_2" bpmnElement="startEvent">
         <dc:Bounds x="173" y="102" width="36" height="36" />
         <bpmndi:BPMNLabel>
           <dc:Bounds x="155" y="138" width="73" height="25" />
@@ -276,7 +282,7 @@
           <dc:Bounds x="1046" y="550.5" width="0" height="13" />
         </bpmndi:BPMNLabel>
       </bpmndi:BPMNEdge>
-      <bpmndi:BPMNShape id="EndEvent_1wjifhb_di" bpmnElement="EndEvent_1wjifhb">
+      <bpmndi:BPMNShape id="EndEvent_1wjifhb_di" bpmnElement="endEvent">
         <dc:Bounds x="536" y="701" width="36" height="36" />
         <bpmndi:BPMNLabel>
           <dc:Bounds x="530" y="740" width="49" height="25" />
