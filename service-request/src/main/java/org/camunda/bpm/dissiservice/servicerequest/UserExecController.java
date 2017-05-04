@@ -1,5 +1,10 @@
 package org.camunda.bpm.dissiservice.servicerequest;
 
+import java.sql.Connection;
+import java.sql.DriverManager;
+import java.sql.PreparedStatement;
+import java.sql.ResultSet;
+import java.sql.SQLException;
 import java.util.logging.Logger;
 import org.camunda.bpm.engine.delegate.DelegateExecution;
 import org.camunda.bpm.engine.delegate.ExecutionListener;
@@ -11,6 +16,12 @@ import org.camunda.bpm.engine.delegate.ExecutionListener;
  * */
 public class UserExecController implements ExecutionListener {
 
+	/* *
+	 * Test Variables
+	 * */
+	static Connection connection = null;
+	static PreparedStatement preparedStatement = null;
+	
 	/* *
 	 * Global Variables
 	 * 	LOGGER: Used to log messages for a specific system or application component.
@@ -34,7 +45,9 @@ public class UserExecController implements ExecutionListener {
 		
 		switch (ACTIVITY) {
 		case "startEvent":
-			// Write some code here
+			connectToDB();
+			addDataToDB("Osmar Hernandez", "A01244070", "6561081010");
+			getDataFromDB();
 			break;
 		case "createUser":
 			// Write some code here
@@ -74,6 +87,70 @@ public class UserExecController implements ExecutionListener {
 			break;
 		default:
 			break;
+		}
+	}
+	
+	private static void connectToDB() {
+		try {
+			Class.forName("com.mysql.jdbc.Driver");
+			LOGGER.info("Congrats - Seems your MySQL JDBC Driver Registered!");
+		} catch (ClassNotFoundException e) {
+			LOGGER.info("Sorry, couldn't found JDBC driver. Make sure you have added JDBC Maven Dependency Correctly");
+			return;
+		}
+ 
+		try {
+			// DriverManager: The basic service for managing a set of JDBC drivers.
+			connection = DriverManager.getConnection("jdbc:mysql://localhost:3306/Dissi", "username", "password");
+			if (connection != null) {
+				LOGGER.info("Connection Successful! Enjoy. Now it's time to push data");
+			} else {
+				LOGGER.info("Failed to make connection!");
+			}
+		} catch (SQLException e) {
+			LOGGER.info("MySQL Connection Failed!");
+			return;
+		}
+	}
+	
+	private static void addDataToDB(String name, String id, String phone) { 
+		try {
+			String insertQueryStatement = "INSERT INTO Engineer VALUES (?,?,?)";
+ 
+			preparedStatement = connection.prepareStatement(insertQueryStatement);
+			preparedStatement.setString(1, name);
+			preparedStatement.setString(2, id);
+			preparedStatement.setString(3, phone);
+ 
+			// execute insert SQL statement
+			preparedStatement.executeUpdate();
+			LOGGER.info(" added successfully");
+		} catch (
+ 
+		SQLException e) {
+			e.printStackTrace();
+		}
+	}
+	
+	private static void getDataFromDB() {
+		try {
+			// MySQL Select Query Tutorial
+			String getQueryStatement = "SELECT * FROM Engineer";
+ 
+			preparedStatement = connection.prepareStatement(getQueryStatement);
+ 
+			// Execute the Query, and get a java ResultSet
+			ResultSet resultSet = preparedStatement.executeQuery();
+ 
+			// Let's iterate through the java ResultSet
+			while (resultSet.next()) {
+				LOGGER.info(resultSet.getString("Name"));
+			}
+ 
+		} catch (
+ 
+		SQLException e) {
+			e.printStackTrace();
 		}
 	}
 }
