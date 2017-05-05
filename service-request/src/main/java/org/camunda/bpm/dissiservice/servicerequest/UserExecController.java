@@ -82,7 +82,7 @@ public class UserExecController implements ExecutionListener {
 			// Write some code here
 			break;
 		case "endEvent":
-			// Write some code here
+			disconnectFromDB();
 			break;
 		default:
 			break;
@@ -115,26 +115,33 @@ public class UserExecController implements ExecutionListener {
 	private static void addDataToDB(String activityId, DelegateExecution exec) { 
 		String insertQueryStatement;
 		try {
+			int i = 1;
+			String values[];
 			switch (activityId) {
 			case "startEvent":
+				values = new String[] {"cotizacionId", "clienteId"};
 				insertQueryStatement = "INSERT INTO Cotizaciones VALUES (?,?,?, null, null)";
+				
 				preparedStatement = connection.prepareStatement(insertQueryStatement);
-				preparedStatement.setInt(1, (int) exec.getVariable("cotizacionId"));
-				preparedStatement.setInt(2, (int) exec.getVariableLocal("clienteId"));
+				
+				for(String value : values) {
+					preparedStatement.setInt(i, (int) exec.getVariable(value));
+					i++;
+				}
 				preparedStatement.setString(3, (String) exec.getVariable("fechaRealizada"));
 				break;
 			case "createUser":
+				values =  new String[] {"nombre", "correo", "telefono", "domicilio", "rfc", "contacto",
+									"razonSocial", "departamento"};
 				insertQueryStatement = "INSERT INTO Clientes VALUES (?,?,?,?,?,?,?,?,?)";
+				
 				preparedStatement = connection.prepareStatement(insertQueryStatement);
-				preparedStatement.setString(1, (String) exec.getVariable("nombre"));
-				preparedStatement.setString(2, (String) exec.getVariable("correo"));
-				preparedStatement.setString(3, (String) exec.getVariable("telefono"));
-				preparedStatement.setString(4, (String) exec.getVariable("domicilio"));
-				preparedStatement.setString(5, (String) exec.getVariable("rfc"));
-				preparedStatement.setString(6, (String) exec.getVariable("contacto"));
-				preparedStatement.setString(7, (String) exec.getVariable("razonSocial"));
-				preparedStatement.setString(8, (String) exec.getVariable("departamento"));
-				preparedStatement.setInt(9, (int) exec.getVariable("id"));
+				
+				for(String value : values) {
+					preparedStatement.setString(i, (String) exec.getVariable(value));
+					i++;
+				}
+				preparedStatement.setInt(i, (int) exec.getVariable("id"));
 				break;
 			default:
 				break;
@@ -211,6 +218,7 @@ public class UserExecController implements ExecutionListener {
 		}
 		if (connection != null) {
 			connection.close();
+			LOGGER.info("****** Disconnected ******");
 		}
 	}
 }

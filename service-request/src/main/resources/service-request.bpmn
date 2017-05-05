@@ -92,7 +92,7 @@
     </bpmn:userTask>
     <bpmn:userTask id="searchTemplate" name="Buscar Plantilla Correspondiente" camunda:formKey="embedded:app:forms/search-template.html" camunda:assignee="Vanesa">
       <bpmn:extensionElements>
-        <camunda:executionListener class="org.camunda.bpm.dissiservice.servicerequest.UserExecController" event="end" />
+        <camunda:executionListener class="org.camunda.bpm.dissiservice.servicerequest.UserExecController" event="start" />
       </bpmn:extensionElements>
       <bpmn:incoming>SequenceFlow_06ichot</bpmn:incoming>
       <bpmn:outgoing>SequenceFlow_0snxys1</bpmn:outgoing>
